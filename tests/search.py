@@ -11,7 +11,7 @@ def query(ix, search_terms):
 
 def search(searcher, query):
      search_res = []
-     results = searcher.search(query, terms=True)
+     results = searcher.search(query, terms=True, limit=10000000000)
      for r in results:
          d = dict(r) | {"score": r.score}
          search_res.append(d)
@@ -23,6 +23,6 @@ if __name__=="__main__":
     index_dir = 'whoosh_doc_index'
     ix = open_dir(index_dir)
     with ix.searcher() as searcher:
-        res= search(searcher, query(ix, ' '.join(sys.argv[1:])))
+        res = search(searcher, query(ix, ' '.join(sys.argv[1:])))
     for i in res:
         print(i['title'], i['path'], i['score'], i['content'])

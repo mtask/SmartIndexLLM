@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 import argparse
-from engine.engine import Engine
+from lib.engine import Engine
 
 def parse_args():
     parser = argparse.ArgumentParser(
