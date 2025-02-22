@@ -9,7 +9,7 @@ from datetime import datetime
 
 class Engine:
 
-    def __init__(self, index_conf, model="llama3.2:1b"):
+    def __init__(self, index_conf, model="llama3.2:1b", index_chunk_size=100):
         self.index_dir = index_conf['index_dir']
         if not os.path.isdir(self.index_dir):
             print("Creating index")
@@ -17,18 +17,19 @@ class Engine:
             self.create_index()
         self.ix = open_dir(self.index_dir)
         self.ollama_model = model
+        self.index_chunk_size = index_chunk_size
 
     def create_index(self):
         schema = Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))
         index.create_in(self.index_dir, schema)
 
-    def chunk_text(self, text, chunk_size=100):
+    def chunk_text(self, text):
         chunks = []
         current_chunk = []
         words = text.split()
         for word in words:
             current_chunk.append(word)
-            if len(current_chunk) >= chunk_size:
+            if len(current_chunk) >= self.index_chunk_size:
                 chunks.append(" ".join(current_chunk))
                 current_chunk = []
         if current_chunk:
@@ -55,7 +56,9 @@ class Engine:
 
     def query_ollama(self, prompt, context_size):
         """Send a query to Ollama and retrieve the response."""
-        llm = OllamaLLM(model=self.ollama_model, num_ctx=context_size)
+        # Better use num_ctx with custom model's Parameters?
+        llm = OllamaLLM(model=self.ollama_model)
+        #llm = OllamaLLM(model=self.ollama_model, num_ctx=context_size)
         return llm.invoke(prompt)
 
     def generate_response(self, query, prompt, context_size=4096):

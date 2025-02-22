@@ -17,7 +17,7 @@ def index_pdf(engine, path, title):
     content = []
     printable = set(string.printable)
     for line in subprocess.check_output(f"pdftotext '{path}' -|perl -0pe 's/([^\\n])\\n([^\\n])/\\1 \\2/g;'", shell=True).decode('UTF-8').split('\n'):
-        if re.match(r'.*[A-z]+.*', line) and len(line) >= 1:
+        if re.match(r'.*[A-z]+.*', line) and '......' not in line and len(line) >= 1:
             content.append(''.join(filter(lambda x: x in printable, line)))
     if not title:
         title = os.path.basename(path)
