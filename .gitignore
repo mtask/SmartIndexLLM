@@ -1,0 +1,6 @@
+__pycache__
+venv
+dir
+conf/sftp_config.yaml
+data
+whoosh_doc_index
