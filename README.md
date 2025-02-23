@@ -2,9 +2,11 @@
 
 SmartIndexLLM allows you to index data from text and pdf files which can then be use in prompts with a locally running large language model (LLM).
   
-As an example, let say that you have a PDF file that contains techinal information about game consoles. Then you want to know somethingö
-At high level you are able to make query to the indexed data from the pdf, like `playstation AND cpu`, and then you can give the LLM a prompt like `Give me details about PS5's CPU`.
-Response from the index query and the prompt are then combined, so the LLM can answer with the data you provided from the index.
+As an example, let say that you have a PDF file that contains techinal information about game consoles.
+The text contents of the PDF is indexed to a [Whoosh](https://whoosh.readthedocs.io/en/latest/intro.html) index.
+Then, at the high level, you are able to make query to the indexed data from the pdf. For example, `playstation AND cpu`. 
+Then, you give the LLM a prompt like `Give me details about PS5's CPU`.
+Response from the query and the prompt are then combined, so the LLM can answer with the data you provided from the index.
 
 ```mermaid
 graph TD
