@@ -2,5 +2,8 @@ __pycache__
 venv
 dir
 conf/config.yaml
+SmartIndexLLM/conf/config.yaml
+SmartIndexLLM/data
 data
+SmartIndexLLM/whoosh_doc_index
 whoosh_doc_index
