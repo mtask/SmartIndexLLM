@@ -4,7 +4,24 @@ There's multiple scripts for different indexing use cases.
 Indexing supports PDF or TXT files based on extension `.txt` and `.pdf`.
 
 All indexing is done via `index.py` and configured with `python3 index.py -c <path to YAML conf>`.
-Configuration for each indexing type is explained below.
+Configuration for each indexing type is explained below in the *Configuration* section.
+
+## Searching and prompting
+
+Both index searching and LLM prompting are done with one command `search_prompt.py`.
+  
+Here's an example prompt when homelab documentation is indexed and the data has details for certificate renewal.
+
+```bash
+$ python3 search_prompt.py --whoosh_query 'cert*'  --ollama_prompt "How do I renew certificate in my homelab?" --model myllama3.2_3b
+```
+
+Here's an example prompt where linux authentication log data is indexed.
+
+```bash
+python3 search_prompt.py --whoosh_query 'pam_unix' --ollama_prompt 'Has there been any authentication related anomalies? State list of anomalies with dates and usernames' -c conf/config.yaml
+```
+
 
 ## Configuration
 
@@ -19,7 +36,7 @@ Then `index.py` skips that type of indexing without errors.
 
 ### Local file
 
-`x`
+`TODO`
 
 ### SFTP
 
@@ -46,27 +63,11 @@ Note. SFTP files are downloaded to local machine and then indexed from the local
 
 Configure web paths
 
-`x`
+`TODO`
 
 ### RSS
 
-`x`
-
-## Searching
-
-```bash
-$ python3 search_prompt.py --whoosh_query 'cert*'  --ollama_prompt "How do I renew certificate in my homelab?" --model myllama3.2_3b
-```
-
-```py
-python3 search_prompt.py --whoosh_query 'pam_unix' --ollama_prompt 'Has there been any authentication related anomalies? State list of anomalies with dates and usernames' -c conf/config.yaml
-```
-
-## Prompt LLM via Ollama and provide context from Whoosh search
-
-```bash
-$ python3 search_prompt.py --whoosh_query 'LED' --ollama_prompt 'How can LED lights be used in cyber attack?'
-```
+`TODO`
 
 ## Debugging
 
