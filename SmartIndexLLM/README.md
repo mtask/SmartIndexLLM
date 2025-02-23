@@ -1,9 +1,7 @@
 ## Indexing
 
-There's multiple scripts for different indexing use cases.
-Indexing supports PDF or TXT files based on extension `.txt` and `.pdf`.
-
 All indexing is done via `index.py` and configured with `python3 index.py -c <path to YAML conf>`.
+Indexing supports PDF or TXT files based on extension `.txt` and `.pdf`.
 Configuration for each indexing type is explained below in the *Configuration* section.
 
 ## Searching and prompting
