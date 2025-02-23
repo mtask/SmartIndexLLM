@@ -9,7 +9,11 @@ from datetime import datetime
 
 class Engine:
 
-    def __init__(self, index_conf, model="llama3.2:1b", index_chunk_size=100):
+    def __init__(self, index_conf,
+            model="llama3.2:1b",
+            index_chunk_size=100,
+            schema=Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))
+        ):
         self.index_dir = index_conf['index_dir']
         if not os.path.isdir(self.index_dir):
             print("Creating index")
