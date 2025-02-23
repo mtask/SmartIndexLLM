@@ -6,4 +6,15 @@ sftp:
     remote_directory: /opt/data/
     local_directory: data/wikipages
 
+local_file:
+  - path: '/tmp/sample.txt'
+    title: 'sample'
+
+web:
+  - url: 'https://example.com'
+
+#TBD
+rss: []
+  #- url: ''
+
 whoosh_index_dir: "whoosh_doc_index"
