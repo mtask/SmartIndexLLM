@@ -25,4 +25,6 @@ if __name__=="__main__":
     with ix.searcher() as searcher:
         res = search(searcher, query(ix, ' '.join(sys.argv[1:])))
     for i in res:
-        print(i['title'], i['path'], i['score'], i['content'])
+        if 'date' in i:
+            i['date'] = str(i['date'])
+        print(json.dumps(i))

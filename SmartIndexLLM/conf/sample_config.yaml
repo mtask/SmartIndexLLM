@@ -1,3 +1,5 @@
+# To disable an indexing type just leave empty list (x: []) to its configuration
+
 sftp:
   - hostname: '127.0.0.1'
     port: 22
@@ -9,6 +11,17 @@ sftp:
 local_file:
   - path: '/tmp/sample.txt'
     title: 'sample'
+
+local_dir:
+  # not recursive
+  - path: /home/user/pdf_docs
+    # index pdfs
+    pdf: true
+    txt: false
+  - path: /home/user/txt_docs
+    # index txt
+    pdf: false
+    txt: true
 
 web:
   - url: 'https://example.com'
