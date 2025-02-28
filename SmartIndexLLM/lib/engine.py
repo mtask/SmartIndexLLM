@@ -1,7 +1,7 @@
 import os
 import hashlib
 from whoosh import index
-from whoosh.fields import Schema, KEYWORD, TEXT, ID, DATETIME
+from whoosh.fields import Schema, KEYWORD, TEXT, ID, DATETIME, NUMERIC, BOOLEAN
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser
 from langchain_ollama import OllamaLLM
@@ -13,8 +13,6 @@ def schema_builder(schema_data):
         stored = field_data['stored']
         unique = field_data.get('unique', False)
         match field_type:
-            case 'ID':
-                return ID(stored=stored, unique=unique)
             case 'KEYWORD':
                 return KEYWORD(stored=stored)
             case 'TEXT':
@@ -25,25 +23,24 @@ def schema_builder(schema_data):
                 return NUMERIC(stored=stored)
             case 'BOOLEAN':
                 return BOOLEAN(stored=stored)
-            case 'STORED':
-                return STORED()
-            case 'NGRAM':
-                return NGRAM(stored=stored)
             case _:
                 raise ValueError(f"Unknown field type: {field_type}")
 
     fields = {key: get_whoosh_field(value) for key, value in schema_data.items()}
+    # Add ID field
+    fields['id'] = ID(stored=True, unique=True)
+    fields['content'] = TEXT(stored=True)
     schema = Schema(**fields)
     return schema
-
 
 class Engine:
 
     def __init__(self, index_dir,
             model="llama3.2:1b",
             index_chunk_size=100,
-            schema=Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))
+            index_schema=Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))
         ):
+        self.index_schema = index_schema
         self.index_dir = index_dir
         if not os.path.isdir(self.index_dir):
             print("Creating index")
@@ -54,8 +51,7 @@ class Engine:
         self.index_chunk_size = index_chunk_size
 
     def create_index(self):
-        schema = Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))
-        index.create_in(self.index_dir, schema)
+        index.create_in(self.index_dir, self.index_schema)
 
     def chunk_text(self, text):
         chunks = []
@@ -70,13 +66,21 @@ class Engine:
             chunks.append(" ".join(current_chunk))
         return chunks
 
-    def index_doc(self, title, content, path):
-        print(f"[*] Indexing document with title: {title}")
+    def index_doc(self, content, **kwargs):
+        if 'title' in kwargs:
+            print(f"[*] Indexing document with title: {kwargs['title']}")
+        else:
+            print(f"[*] Indexing document")
         writer = self.ix.writer()
         chunks = self.chunk_text(content)
         for chunk in chunks:
             id = hashlib.sha256(chunk.encode('UTF-8')).hexdigest()
-            writer.update_document(id=id, date=datetime.now(), title=title, content=chunk.strip(), path=path)
+            doc_fields = {
+                'id': id,
+                'content': chunk.strip(),
+                **kwargs
+            }
+            writer.update_document(**doc_fields)
         writer.commit()
 
     def search(self, query_str):

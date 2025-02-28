@@ -13,7 +13,7 @@ def recursive(doc_type):
                 docs.append(path)
     return docs
 
-def index_pdf(engine, path, title):
+def index_pdf(engine, path, title, url="", datatype="pdf"):
     content = []
     printable = set(string.printable)
     for line in subprocess.check_output(f"pdftotext '{path}' -|perl -0pe 's/([^\\n])\\n([^\\n])/\\1 \\2/g;'", shell=True).decode('UTF-8').split('\n'):
@@ -21,9 +21,9 @@ def index_pdf(engine, path, title):
             content.append(''.join(filter(lambda x: x in printable, line)))
     if not title:
         title = os.path.basename(path)
-    engine.index_doc(title, '\n'.join(content), path)
+    engine.index_doc('\n'.join(content), title=title, path=path, datatype=datatype, url=url)
 
-def index_text(engine, path, title):
+def index_text(engine, path, title, date=None, url="", datatype=""):
     content = []
     printable = set(string.printable)
     with open(path, 'r', encoding='UTF-8') as f:
@@ -32,4 +32,4 @@ def index_text(engine, path, title):
                 content.append(''.join(filter(lambda x: x in printable, line)))
     if not title:
         title = os.path.basename(path)
-    engine.index_doc(title, '\n'.join(content), path)
+    engine.index_doc('\n'.join(content), title=title, path=path, date=date, url=url, datatype=datatype)
