@@ -13,17 +13,13 @@ local_file:
 web:
   - url: 'https://example.com'
 
-#TBD
 rss: []
   #- url: ''
 
 whoosh_index:
   dir: "whoosh_doc_index"
-  schema: # 'Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))'
-    id:
-      type: ID
-      unique: true
-      stored: true
+  # Fields 'ID(id)' 'TEXT(content)' are always added to schema
+  schema:
     title:
       type: KEYWORD
       unique: false
@@ -32,7 +28,20 @@ whoosh_index:
       type: TEXT
       unique: false
       stored: true
-    content:
+    summary:
       type: TEXT
       unique: false
       stored: true
+    url:
+      type: TEXT
+      unique: false
+      stored: true
+    datatype:
+      type: TEXT
+      unique: false
+      stored: true
+    date:
+      type: DATETIME
+      unique: false
+      stored: true
+
