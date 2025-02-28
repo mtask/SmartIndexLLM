@@ -13,7 +13,7 @@ Both index searching and LLM prompting are done with one command `search_prompt.
 Here's an example prompt when homelab documentation is indexed and the data has details for certificate renewal.
 
 ```bash
-$ python3 search_prompt.py --whoosh_query 'cert*'  --ollama_prompt "How do I renew certificate in my homelab?" --model myllama3.2_3b
+$ python3 search_prompt.py -c config/config.yaml --whoosh_query 'cert*'  --ollama_prompt "How do I renew certificate in my homelab?" --model myllama3.2_3b
 ```
 
 Here's an example prompt where linux authentication log data is indexed.
