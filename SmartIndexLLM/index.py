@@ -1,5 +1,5 @@
 from lib.sftp_get import SFTPClient
-from lib.engine import Engine
+from lib.engine import Engine, schema_builder
 from lib.index import index_text,index_pdf
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -76,7 +76,11 @@ if __name__=="__main__":
     args = parse_args()
     with open(args.c, 'r') as file:
         config = yaml.safe_load(file)
-    e = Engine({"index_dir": config['whoosh_index_dir']})
+    # Get index settings
+    index_schema = schema_builder(config['whoosh_index']['schema'])
+    index_dir = config['whoosh_index']['dir']
+    e = Engine(index_dir, index_schema)
+    # Index data
     if len(config['sftp']) > 0:
         sftp_index(config, e)
     if len(config['local_file']) > 0:

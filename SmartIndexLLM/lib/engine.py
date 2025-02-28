@@ -7,14 +7,44 @@ from whoosh.qparser import QueryParser
 from langchain_ollama import OllamaLLM
 from datetime import datetime
 
+def schema_builder(schema_data):
+    def get_whoosh_field(field_data):
+        field_type = field_data['type']
+        stored = field_data['stored']
+        unique = field_data.get('unique', False)
+        match field_type:
+            case 'ID':
+                return ID(stored=stored, unique=unique)
+            case 'KEYWORD':
+                return KEYWORD(stored=stored)
+            case 'TEXT':
+                return TEXT(stored=stored)
+            case 'DATETIME':
+                return DATETIME(stored=stored)
+            case 'NUMERIC':
+                return NUMERIC(stored=stored)
+            case 'BOOLEAN':
+                return BOOLEAN(stored=stored)
+            case 'STORED':
+                return STORED()
+            case 'NGRAM':
+                return NGRAM(stored=stored)
+            case _:
+                raise ValueError(f"Unknown field type: {field_type}")
+
+    fields = {key: get_whoosh_field(value) for key, value in schema_data.items()}
+    schema = Schema(**fields)
+    return schema
+
+
 class Engine:
 
-    def __init__(self, index_conf,
+    def __init__(self, index_dir,
             model="llama3.2:1b",
             index_chunk_size=100,
             schema=Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))
         ):
-        self.index_dir = index_conf['index_dir']
+        self.index_dir = index_dir
         if not os.path.isdir(self.index_dir):
             print("Creating index")
             os.mkdir(self.index_dir)

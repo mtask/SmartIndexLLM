@@ -17,4 +17,22 @@ web:
 rss: []
   #- url: ''
 
-whoosh_index_dir: "whoosh_doc_index"
+whoosh_index:
+  dir: "whoosh_doc_index"
+  schema: # 'Schema(id=ID(stored=True,unique=True),date=DATETIME(stored=True), title=KEYWORD(stored=True), path=TEXT(stored=True), content=TEXT(stored=True))'
+    id:
+      type: ID
+      unique: true
+      stored: true
+    title:
+      type: KEYWORD
+      unique: false
+      stored: true
+    path:
+      type: TEXT
+      unique: false
+      stored: true
+    content:
+      type: TEXT
+      unique: false
+      stored: true
