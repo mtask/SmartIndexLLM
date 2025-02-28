@@ -79,7 +79,7 @@ if __name__=="__main__":
     # Get index settings
     index_schema = schema_builder(config['whoosh_index']['schema'])
     index_dir = config['whoosh_index']['dir']
-    e = Engine(index_dir, index_schema)
+    e = Engine(index_dir, schema=index_schema)
     # Index data
     if len(config['sftp']) > 0:
         sftp_index(config, e)

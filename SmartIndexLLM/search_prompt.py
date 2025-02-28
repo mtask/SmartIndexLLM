@@ -5,7 +5,7 @@ import subprocess
 import sys
 import argparse
 import yaml
-from lib.engine import Engine
+from lib.engine import Engine, schema_builder
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -20,8 +20,9 @@ if __name__=="__main__":
     args = parse_args()
     with open('conf/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
-    e = Engine({"index_dir": config['whoosh_index_dir']})
-
-    engine = Engine({"index_dir": "whoosh_doc_index"}, model=args.model)
-    response = engine.generate_response(query=args.whoosh_query, prompt=args.ollama_prompt)
+    # Get index settings
+    index_schema = schema_builder(config['whoosh_index']['schema'])
+    index_dir = config['whoosh_index']['dir']
+    e = Engine(index_dir, schema=index_schema)
+    response = e.generate_response(query=args.whoosh_query, prompt=args.ollama_prompt)
     print(response)
