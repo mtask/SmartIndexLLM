@@ -1,3 +1,4 @@
+import json
 import os
 import hashlib
 from whoosh import index
@@ -84,12 +85,18 @@ class Engine:
         writer.commit()
 
     def search(self, query_str):
+        def datetime_serializer(obj):
+            if isinstance(obj, datetime):
+                return obj.isoformat()
         results = []
         with self.ix.searcher() as searcher:
             query = QueryParser("content", self.ix.schema).parse(query_str)
             hits = searcher.search(query, limit=1000000)
             for hit in hits:
-                results.append(hit['content'])
+                #results.append(hit['content'])
+                hit_dict = dict(hit)
+                hit_dict.pop('id')
+                results.append(json.dumps(hit_dict, default=datetime_serializer))
         return results
 
     def query_ollama(self, prompt, context_size):

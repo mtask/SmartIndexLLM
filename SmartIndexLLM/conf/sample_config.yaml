@@ -28,7 +28,8 @@ web:
 
 rss: []
   #- url: ''
-
+  # Follow in and content of the entrie's provided link
+  #   follow_link: True
 whoosh_index:
   dir: "whoosh_doc_index"
   # Fields 'ID(id)' 'TEXT(content)' are always added to schema

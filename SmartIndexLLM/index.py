@@ -13,13 +13,6 @@ import string
 import re
 import argparse
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-                    prog='Indexer')
-    parser.add_argument('-c', help="Path to yaml config file", required=True, metavar="YAML")
-    return parser.parse_args()
-
-
 def _index_pdf(engine, path, title, url="", datatype="pdf"):
     """
     Help function for pdf indexing
@@ -112,8 +105,10 @@ def rss_index(config, e):
                 description = "\n".join(line.strip() for line in description.splitlines() if line.strip())
             else:
                 description = entry.title
+            if con.get('follow_link', False):
+                web_index({"web": [{"url": entry.link}]}, e)
             summary = description[:200] + "..." if len(description) > 200 else description
-            e.index_doc(description, title=entry.title, date=published, url=con['url'], datatype="rss", summary=summary)
+            e.index_doc(description, title=entry.title, date=published, url=entry.link, datatype="rss", summary=summary,path=con['url'])
 
 def local_dir_index(config, e):
     def get_dir_files(ldir):
@@ -132,6 +127,12 @@ def local_dir_index(config, e):
             else:
                 _index_text_file(e, file_path, os.path.basename(file_path), datatype="txt")
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+                    prog='Indexer')
+    parser.add_argument('-c', help="Path to yaml config file", required=True, metavar="YAML")
+    parser.add_argument('-t', help='Index specific type of source data (select: "sftp", "local_file", "local_dir", "web" or "rss")', choices=["sftp", "local_file", "local_dir", "web", "rss"], required=False, metavar="DATATYPE")
+    return parser.parse_args()
 
 if __name__=="__main__":
     args = parse_args()
@@ -140,15 +141,15 @@ if __name__=="__main__":
     # Get index settings
     index_schema = schema_builder(config['whoosh_index']['schema'])
     index_dir = config['whoosh_index']['dir']
-    e = Engine(index_dir, index_schema=index_schema, index_chunk_size=500)
+    e = Engine(index_dir, index_schema=index_schema, index_chunk_size=100)
     # Index data
-    if len(config['sftp']) > 0:
+    if len(config['sftp']) > 0 and (not args.t or args.t == "sftp"):
         sftp_index(config, e)
-    if len(config['local_file']) > 0:
+    if len(config['local_file']) > 0 and (not args.t or args.t == "local_file"):
         local_file_index(config, e)
-    if len(config['web']) > 0:
+    if len(config['web']) > 0 and (not args.t or args.t == "web"):
         web_index(config, e)
-    if len(config['rss']) > 0:
+    if len(config['rss']) > 0 and (not args.t or args.t == "rss"):
         rss_index(config, e)
-    if len(config['local_dir']) > 0:
+    if len(config['local_dir']) > 0 and (not args.t or args.t == "local_dir"):
         local_dir_index(config, e)
